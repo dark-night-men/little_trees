@@ -45,6 +45,7 @@
 #include <math.h>
 
 #include <QKeyEvent>
+#include <QQueue>
 
 //! [0]
 GraphWidget::GraphWidget(QWidget *parent)
@@ -68,7 +69,7 @@ GraphWidget::GraphWidget(QWidget *parent)
     Node *node2 = new Node(this);
     Node *node3 = new Node(this);
     Node *node4 = new Node(this);
-    centerNode = new Node(this);
+    centerNode = new Node(this , 0 , 0 , "A" );
     Node *node6 = new Node(this);
     Node *node7 = new Node(this);
     Node *node8 = new Node(this);
@@ -104,6 +105,19 @@ GraphWidget::GraphWidget(QWidget *parent)
     node7->setPos(-50, 50);
     node8->setPos(0, 50);
     node9->setPos(50, 50);
+
+    QQueue < Node * > queue ; 
+    queue << centerNode ;
+
+    do {
+        Node * n = queue . dequeue() ;
+
+        foreach ( Node * nn , n -> genChildren() ) {
+            queue . enqueue ( nn ) ;
+        }
+
+    } while ( ! queue . isEmpty() ) ;
+
 }
 //! [1]
 

@@ -47,9 +47,15 @@
 #include <QPainter>
 #include <QStyleOption>
 
+#include <assert.h>
+#include <QDebug>
+
 //! [0]
-Node::Node(GraphWidget *graphWidget)
+Node::Node(GraphWidget *graphWidget , Node * parent , int generation , const QString & name  )
     : graph(graphWidget)
+    , parent_ ( parent )
+    , nodeName_ ( name )
+    , generation_ ( generation )
 {
     setFlag(ItemIsMovable);
     setFlag(ItemSendsGeometryChanges);
@@ -64,6 +70,73 @@ void Node::addEdge(Edge *edge)
     edgeList << edge;
     edge->adjust();
 }
+
+void Node::addChild(Node * node)
+{
+    children_ << node ;
+}
+
+void Node::setParent( Node * parent )
+{
+    parent_ = parent ;
+}
+
+void Node::setGeneration( int g )
+{
+    generation_ = g ;
+}
+
+int Node::generation( )
+{
+    return generation_ ;
+}
+
+void Node::setNodeName( const QString & name )
+{
+    nodeName_ = name ;
+}
+
+QString Node::nodeName( ) const
+{
+    return nodeName_ ;
+}
+
+QList< Node * > Node::genChildren( )
+{
+    if ( generation_ > 2  ) 
+        return QList< Node* >( ) ;
+
+    qDebug() << "                                                        -" ;
+
+    qDebug() << "Parent name" << nodeName() << "; gen " << generation_ ;
+
+    QStringList names( QStringList()  << "A" << "B" << "C" << "D" << "E" ) ;
+    QMap < QString , int > counts ;
+
+    counts["A"] = 3 ;
+    counts["B"] = 2 ;
+    counts["C"] = 5 ;
+    counts["D"] = 1 ;
+    counts["E"] = 2 ;
+
+
+    int c = counts . value( nodeName_  , -1  ) ;
+    assert( c > -1  ) ;
+
+    for ( int i = 0 ; i < c ; ++i ) {
+
+        qDebug() << "Child name" << names . at( i ) << "; gen " << generation_ + 1 ;
+        children_ << new Node( graph , this , generation_ + 1 , names . at( i ) ) ;
+    }
+
+    return children_ ;
+}
+
+QList<Node *> Node::children() const
+{
+    return children_ ;
+}
+
 
 QList<Edge *> Node::edges() const
 {

@@ -54,7 +54,7 @@ QT_END_NAMESPACE
 class Node : public QGraphicsItem
 {
 public:
-    Node(GraphWidget *graphWidget);
+    Node(GraphWidget *graphWidget , Node * parent = 0 , int generation = -1 , const QString & name = QString() );
 
     void addEdge(Edge *edge);
     QList<Edge *> edges() const;
@@ -69,6 +69,16 @@ public:
     QPainterPath shape() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
+    void addChild(Node * node);
+    void setParent( Node * parent );
+    void setGeneration( int g );
+    int generation() ;
+
+    QString nodeName() const ;
+    void setNodeName( const QString & name ) ;
+
+    QList<Node *> genChildren( );
+    QList<Node *> children() const ;
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
@@ -79,7 +89,13 @@ private:
     QList<Edge *> edgeList;
     QPointF newPos;
     GraphWidget *graph;
+
+    Node * parent_ ;
+    QString nodeName_ ;
+    QList<Node *> children_ ;
+    int generation_ ;
 };
 //! [0]
+
 
 #endif // NODE_H
